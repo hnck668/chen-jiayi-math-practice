@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>陈佳怡数学错题拔高练习</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B3B5F'/%3E%3Ctext x='32' y='44' font-size='32' font-weight='bold' text-anchor='middle' fill='%23E8622C' font-family='Georgia,serif'%3E%E7%BB%83%3C/text%3E%3C/svg%3E">
+<script defer src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#F4F6F9; --card:#FFFFFF; --ink:#16283E; --muted:#5B6B7F; --line:#E4E9F0;
+  --navy:#1B3B5F; --navy2:#21497A; --accent:#E8622C; --accent-soft:#FDEFE7;
+  --ok:#1F8A5C; --ok-soft:#E7F5EE; --bad:#D64541; --bad-soft:#FBECEC;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+button{font-family:inherit}
+.btn{border:none;border-radius:10px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#CE5320}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy2)}
+.btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn:focus-visible,.opt:focus-visible,summary:focus-visible,.retry-q:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ===== 顶部进度条 ===== */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.topbar .wrap{display:flex;align-items:center;gap:12px;padding-top:8px;padding-bottom:8px}
+.progress-text{font-size:13px;color:var(--muted);white-space:nowrap}
+.prog-track{flex:1;height:6px;background:#E7ECF3;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width .45s ease}
+.score-pill{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap}
+
+/* ===== Hero ===== */
+.hero{background:linear-gradient(140deg,#14263D 0%,#1B3B5F 58%,#26517F 100%);color:#fff;position:relative;overflow:hidden}
+.hero .wrap{position:relative;padding:36px 16px 42px}
+.deco{position:absolute;font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:24px;color:rgba(255,255,255,.13);animation:float 9s ease-in-out infinite alternate;user-select:none}
+@keyframes float{from{transform:translateY(-8px) rotate(-3deg)}to{transform:translateY(10px) rotate(4deg)}}
+.kicker{font-size:12.5px;letter-spacing:2px;color:#A9C6E4;margin:0 0 4px;text-transform:uppercase}
+.hero h1{font-size:clamp(24px,5.4vw,34px);margin:0 0 8px;font-weight:800;animation:fadeUp .7s ease both}
+.hero .sub{color:#CFE0F2;font-size:14.5px;margin:0;animation:fadeUp .7s .12s ease both}
+.meta-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;animation:fadeUp .7s .24s ease both}
+.chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:5px 12px;font-size:13px}
+.hero-cta{margin-top:20px;animation:fadeUp .7s .36s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.deco{animation:none}.hero h1,.hero .sub,.meta-chips,.hero-cta{animation:none}}
+
+/* ===== 章节标题 ===== */
+.sec-title{font-size:19px;font-weight:800;margin:26px 0 6px}
+.sec-note{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.sec-block{display:flex;align-items:center;gap:10px;margin:28px 0 4px}
+.sec-badge{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;background:var(--navy);flex:none}
+.sec-name{font-weight:800;font-size:16.5px}
+.sec-meta{font-size:12.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+/* ===== 诊断报告 ===== */
+.diag-grid{display:grid;gap:14px}
+@media (min-width:720px){.diag-grid{grid-template-columns:1fr 1fr}}
+.diag-card{border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px}
+.diag-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.diag-title{font-weight:800;font-size:15.5px;margin:0}
+.diag-src{font-size:12px;color:var(--muted);white-space:nowrap}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.kp-chip{font-size:12px;background:#EAF0F8;color:#2B5E9E;border-radius:6px;padding:3px 8px}
+.diag-sub{font-weight:700;font-size:13px;margin:10px 0 4px}
+.diag ul{margin:4px 0 0;padding-left:18px;font-size:14px;color:#3A4B5F}
+.diag li{margin:4px 0}
+.fix{margin-top:10px;font-size:14px;background:#F7FAFD;border-radius:8px;padding:10px 12px;color:#2A3B4F;line-height:1.7}
+.fix b{color:var(--accent)}
+details{margin-top:10px;font-size:13.5px}
+summary{cursor:pointer;color:var(--navy2);font-weight:600}
+.orig-text{font-size:13.5px;color:#3A4B5F;background:#F4F6F9;border-radius:8px;padding:10px 12px;margin-top:8px;line-height:1.75}
+.mini-img{max-width:100%;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:block}
+
+/* ===== 题卡 ===== */
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 2px rgba(22,40,62,.05);scroll-margin-top:64px}
+#report{scroll-margin-top:64px}
+.qcard.correct{border-color:var(--ok)}
+.qcard.wrong{border-color:var(--bad)}
+.qmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.qno{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px}
+.tag.diff-base{background:#EAF0F8;color:#2B5E9E}
+.tag.diff-mid{background:#FDF1E3;color:#B26A00}
+.tag.kp{background:#EFF3F8;color:var(--muted)}
+.tag.sec-tag{background:#F1F3F6;color:#4A5B6E}
+.src{display:inline-block;font-size:12px;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}
+.stem{font-size:15.5px;line-height:1.75;margin:10px 0 12px}
+.blank{display:inline-block;min-width:60px;border-bottom:1.5px solid var(--ink);text-align:center;margin:0 2px}
+.fig{max-width:230px;height:auto;display:block;margin:10px auto 4px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;margin:0;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px;color:var(--ink);cursor:pointer;min-height:46px}
+.opt:hover{border-color:var(--navy2);background:#F7FAFD}
+.opt .key{display:inline-flex;width:26px;height:26px;border-radius:7px;background:#EFF3F8;color:#4A5B6E;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.opt.is-ans{border-color:var(--ok);background:var(--ok-soft)}
+.opt.is-ans .key{background:var(--ok);color:#fff}
+.opt.is-wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.is-wrong .key{background:var(--bad);color:#fff}
+.opt.disabled{cursor:default}
+.num-row{display:flex;gap:10px;flex-wrap:wrap}
+.num-input{font-size:16px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;width:240px;max-width:100%;color:var(--ink);background:#fff}
+.num-input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.num-input.in-ok{border-color:var(--ok);background:var(--ok-soft)}
+.num-input.in-bad{border-color:var(--bad);background:var(--bad-soft)}
+.fb{display:none;margin-top:12px;border-radius:10px;padding:12px;background:#F7FAFD;border:1px solid var(--line)}
+.fb.show{display:block;animation:fbIn .25s ease both}
+@keyframes fbIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.verdict{font-weight:800;font-size:15px}
+.v-ok{color:var(--ok)}
+.v-bad{color:var(--bad)}
+.your-ans{font-size:13.5px;color:var(--muted);margin-top:2px}
+.sol{margin-top:6px;font-size:14.5px;line-height:1.8;color:#2A3B4F}
+
+/* ===== 成绩单 ===== */
+.rep-card{background:var(--navy);color:#fff;border-radius:16px;padding:20px 16px;margin-top:24px}
+.rep-score-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-wrap{width:128px;height:128px;position:relative;flex:none}
+.ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800}
+.ring-num .big{font-size:30px;line-height:1}
+.ring-num .small{font-size:12px;color:#B9CBDF}
+.rep-stats{flex:1;min-width:160px;font-size:14px}
+.rep-stats .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.18)}
+.rep-stats .row:last-child{border-bottom:none}
+.rep-stats b{font-weight:700}
+.rep-white{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.sub-h{font-weight:800;font-size:15px;margin:0 0 10px}
+#chartKp{width:100%;height:230px}
+.css-bars .cssbar{margin:8px 0}
+.cssbar .lb{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px}
+.bar-track{height:8px;background:#E7ECF3;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;background:var(--navy);transition:width .6s ease}
+.retry-list{display:flex;flex-wrap:wrap;gap:8px}
+.retry-q{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:13px;background:#fff;cursor:pointer;min-height:44px;color:var(--ink)}
+.retry-q:hover{border-color:var(--accent);color:var(--accent)}
+.all-ok{font-size:14px;color:var(--ok);font-weight:600}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* ===== 页脚 ===== */
+.foot{color:var(--muted);font-size:12.5px;text-align:center;padding:24px 16px 32px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="progress-text" id="progText">已答 0 / 17</div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="score-pill" id="scorePill">答对 0</div>
+  </div>
+</header>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="deco" style="left:5%;top:16px">x² − 2x − 3 = 0</span>
+    <span class="deco" style="right:7%;top:64px;animation-delay:-3s">√61 ⁄ 3</span>
+    <span class="deco" style="right:15%;bottom:14px;animation-delay:-6s">Δ &gt; 0</span>
+    <p class="kicker">西安 · 人教版 九年级数学</p>
+    <h1>陈佳怡 · 数学错题拔高练习</h1>
+    <p class="sub">依据近期 2 道错题定制 · 结合月考考纲补充相似专项 · 作答即判分，附详细解析</p>
+    <div class="meta-chips">
+      <span class="chip">学生：陈佳怡</span>
+      <span class="chip">科目：数学</span>
+      <span class="chip">进度：九年级下册</span>
+      <span class="chip">题量：17 题</span>
+      <span class="chip">建议用时：30 分钟</span>
+    </div>
+    <div class="hero-cta"><button type="button" class="btn btn-primary" id="startBtn">开始练习</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="diag">
+    <h2 class="sec-title">错题诊断报告</h2>
+    <p class="sec-note">以下 2 道题来自陈佳怡近期作业/试卷中的错题，均为西安中考高频考点。本次练习按“先补漏洞、再练变式”的思路设计，难度为基础 + 中档巩固。</p>
+    <p class="sec-note" style="background:#EAF0F8;border-radius:8px;padding:8px 12px;color:#2B5E9E;">考纲参考：某JD附中九年级第一次月考数学范围（满分 120 分，100 分钟）涵盖相似三角形、一元二次方程、概率、特殊平行四边形、折叠、黄金分割、动点最值等，本次已按该范围补充“板块三 · 相似三角形”6 题。</p>
+    <div class="diag-grid">
+
+      <article class="diag-card">
+        <div class="diag-head"><h3 class="diag-title">错题 ① “和谐方程”</h3><span class="diag-src">一元二次方程 · 新定义</span></div>
+        <div class="chip-row">
+          <span class="kp-chip">新定义理解与翻译</span>
+          <span class="kp-chip">根的判别式</span>
+          <span class="kp-chip">韦达定理 · 恒等变形</span>
+        </div>
+        <p class="diag-sub">易错点</p>
+        <ul>
+          <li>不会把 x₁²+x₂² = x₁x₂+4 恒等变形为 (x₁+x₂)² − 3x₁x₂ = 4；</li>
+          <li>求出参数 m 后忘记用判别式 Δ &gt; 0 检验，保留多余解；</li>
+          <li>展开 (2m+1)² 时漏掉中间项 4m，符号出错。</li>
+        </ul>
+        <p class="diag-sub">突破对策</p>
+        <div class="fix">① 新定义题先“翻译”：把新条件改写成熟悉的代数式；② 含参方程三步走：求 Δ → 列不等式定范围 → 回代检验；③ 专项练韦达恒等变形（x₁²+x₂²、1/x₁+1/x₂）。</div>
+        <details>
+          <summary>查看原题</summary>
+          <div class="orig-text">新定义：若一元二次方程 ax²+bx+c=0（a≠0）的两个根为 x₁、x₂，且满足 x₁²+x₂² = x₁x₂+4，则称该方程为“和谐方程”。<br>(1) 判断方程 x²−2x=0 是不是“和谐方程”，并说明理由。<br>(2) 已知关于 x 的方程 x²−(2m+1)x+m²−2=0 有两个不相等的实数根，① 求 m 的取值范围；② 若该方程为“和谐方程”，求 m 的值。</div>
+          <img class="mini-img" src="assets/wrong-q1.jpg" alt="错题一原题图">
+        </details>
+      </article>
+
+      <article class="diag-card">
+        <div class="diag-head"><h3 class="diag-title">错题 ② 矩形折叠求 EC′</h3><span class="diag-src">几何 · 轴对称 · 勾股</span></div>
+        <div class="chip-row">
+          <span class="kp-chip">折叠 = 轴对称</span>
+          <span class="kp-chip">勾股定理列方程</span>
+          <span class="kp-chip">坐标法兜底</span>
+        </div>
+        <p class="diag-sub">易错点</p>
+        <ul>
+          <li>对应点（A↔A′、C↔C′）找错，折痕弄反；</li>
+          <li>不会设未知数、用勾股列方程，直接硬算；</li>
+          <li>计算量大，二次根式化简出错。</li>
+        </ul>
+        <p class="diag-sub">突破对策</p>
+        <div class="fix">① 先在图上标出折叠前后相等的线段（DA=DA′、EA=EA′、DC=DC′…）；② 设未知数 → 勾股建方程 → 求解；③ 位置关系复杂时用坐标法求交点与距离，最稳。</div>
+        <details>
+          <summary>查看原题</summary>
+          <div class="orig-text">14. 如图，在矩形纸片 ABCD 中，AB=3，AD=5，点 E、F 分别在边 AB、BC 上，将矩形纸片沿 DE、DF 分别折叠，点 A 的对应点 A′ 恰好落在 BC 上，点 C 的对应点 C′ 恰好落在 DA′ 上，连接 EC′，则 EC′ 的长为____。</div>
+          <img class="mini-img" src="assets/wrong-q2.jpg" alt="错题二原题图">
+        </details>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="quiz">
+    <div id="quizContainer"></div>
+  </section>
+
+  <section id="report" hidden>
+    <div class="rep-card">
+      <div class="rep-score-row">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 128 128" width="128" height="128" aria-hidden="true">
+            <circle cx="64" cy="64" r="54" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10"/>
+            <circle id="ringArc" cx="64" cy="64" r="54" fill="none" stroke="#E8622C" stroke-width="10" stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="339.292" transform="rotate(-90 64 64)" style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="ring-num"><span class="big" id="ringScore">0</span><span class="small" id="ringTotal">/ 17 题</span></div>
+        </div>
+        <div class="rep-stats">
+          <div class="row"><span>答对</span><b id="statOk">0 题</b></div>
+          <div class="row"><span>答错</span><b id="statNo">0 题</b></div>
+          <div class="row"><span>正确率</span><b id="statRate">0%</b></div>
+          <div class="row"><span>板块一 一元二次方程</span><b id="statAlg">–</b></div>
+          <div class="row"><span>板块二 矩形折叠</span><b id="statGeo">–</b></div>
+          <div class="row"><span>板块三 相似三角形</span><b id="statSim">–</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="rep-white">
+      <p class="sub-h">知识点掌握度（答对占比）</p>
+      <div id="chartKp"></div>
+    </div>
+    <div class="rep-white">
+      <p class="sub-h">错题清单（点击可重练本题）</p>
+      <div class="retry-list" id="retryList"></div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-navy" id="retryWrongBtn">重练全部错题</button>
+        <button type="button" class="btn btn-ghost" id="resetAllBtn">重新开始（全部 17 题）</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">由辅导老师基于陈佳怡错题定制 · 西安·人教版九年级数学 · 难度：基础 + 中档巩固</footer>
+
+<script>
+'use strict';
+const FIG_DG = '<svg class="fig" viewBox="0 0 180 340" role="img" aria-label="矩形折叠示意图"><rect x="20" y="60" width="120" height="240" fill="none" stroke="#1B3B5F" stroke-width="2"/><line x1="86.7" y1="60" x2="20" y2="300" stroke="#E8622C" stroke-width="1.6" stroke-dasharray="5 4"/><line x1="140" y1="200" x2="20" y2="300" stroke="#E8622C" stroke-width="1.6" stroke-dasharray="5 4"/><circle cx="20" cy="60" r="3.5" fill="#1B3B5F"/><text x="6" y="52" font-size="13" fill="#16283E">A</text><circle cx="140" cy="60" r="3.5" fill="#1B3B5F"/><text x="146" y="52" font-size="13" fill="#16283E">B</text><circle cx="140" cy="300" r="3.5" fill="#1B3B5F"/><text x="146" y="318" font-size="13" fill="#16283E">C</text><circle cx="20" cy="300" r="3.5" fill="#1B3B5F"/><text x="4" y="318" font-size="13" fill="#16283E">D</text><circle cx="86.7" cy="60" r="3.5" fill="#E8622C"/><text x="90" y="50" font-size="13" fill="#E8622C">E</text><circle cx="140" cy="100" r="3.5" fill="#1F8A5C"/><text x="146" y="92" font-size="13" fill="#1F8A5C">A′</text><circle cx="140" cy="200" r="3.5" fill="#E8622C"/><text x="146" y="194" font-size="13" fill="#E8622C">F</text><circle cx="92" cy="180" r="3.5" fill="#D64541"/><text x="76" y="172" font-size="13" fill="#D64541">C′</text><line x1="86.7" y1="60" x2="92" y2="180" stroke="#D64541" stroke-width="1.4" stroke-dasharray="3 3"/><text x="90" y="334" font-size="11" fill="#5B6B7F">示意图（AB=3，AD=5）</text></svg>';
+const FIG_Q11 = '<svg class="fig" viewBox="0 0 200 340" role="img" aria-label="矩形折叠示意图"><rect x="20" y="60" width="160" height="240" fill="none" stroke="#1B3B5F" stroke-width="2"/><line x1="180" y1="60" x2="20" y2="300" stroke="#1B3B5F" stroke-width="1.5" stroke-dasharray="6 4"/><line x1="20" y1="220" x2="100" y2="60" stroke="#E8622C" stroke-width="1.6" stroke-dasharray="5 4"/><circle cx="20" cy="60" r="3.5" fill="#1B3B5F"/><text x="6" y="52" font-size="13" fill="#16283E">A</text><circle cx="180" cy="60" r="3.5" fill="#1B3B5F"/><text x="186" y="52" font-size="13" fill="#16283E">B</text><circle cx="180" cy="300" r="3.5" fill="#1B3B5F"/><text x="186" y="318" font-size="13" fill="#16283E">C</text><circle cx="20" cy="300" r="3.5" fill="#1B3B5F"/><text x="4" y="318" font-size="13" fill="#16283E">D</text><circle cx="148" cy="124" r="3.5" fill="#1F8A5C"/><text x="152" y="116" font-size="13" fill="#1F8A5C">E</text><circle cx="20" cy="220" r="3.5" fill="#E8622C"/><text x="4" y="212" font-size="13" fill="#E8622C">F</text><circle cx="100" cy="60" r="3.5" fill="#E8622C"/><text x="104" y="52" font-size="13" fill="#E8622C">G</text><text x="100" y="334" font-size="11" fill="#5B6B7F" text-anchor="middle">示意图（AB=4，AD=8）</text></svg>';
+const FIG_PROP = '<svg class="fig" viewBox="0 0 260 210" role="img" aria-label="平行线分线段成比例示意图"><line x1="60" y1="20" x2="60" y2="190" stroke="#1B3B5F" stroke-width="1.6"/><line x1="130" y1="20" x2="130" y2="190" stroke="#1B3B5F" stroke-width="1.6"/><line x1="200" y1="20" x2="200" y2="190" stroke="#1B3B5F" stroke-width="1.6"/><line x1="20" y1="28.6" x2="245" y2="92.9" stroke="#E8622C" stroke-width="1.5"/><line x1="20" y1="108.6" x2="245" y2="172.9" stroke="#E8622C" stroke-width="1.5"/><circle cx="60" cy="40" r="3" fill="#16283E"/><text x="44" y="32" font-size="12" fill="#16283E">A</text><circle cx="130" cy="60" r="3" fill="#16283E"/><text x="136" y="52" font-size="12" fill="#16283E">B</text><circle cx="200" cy="80" r="3" fill="#16283E"/><text x="206" y="72" font-size="12" fill="#16283E">C</text><circle cx="60" cy="120" r="3" fill="#16283E"/><text x="44" y="138" font-size="12" fill="#16283E">D</text><circle cx="130" cy="140" r="3" fill="#16283E"/><text x="136" y="132" font-size="12" fill="#16283E">E</text><circle cx="200" cy="160" r="3" fill="#16283E"/><text x="206" y="152" font-size="12" fill="#16283E">F</text><text x="10" y="58" font-size="11" fill="#5B6B7F">a</text><text x="134" y="58" font-size="11" fill="#5B6B7F">b</text><text x="204" y="58" font-size="11" fill="#5B6B7F">c</text><text x="130" y="200" font-size="11" fill="#5B6B7F" text-anchor="middle">示意图</text></svg>';
+const FIG_TRI = '<svg class="fig" viewBox="0 0 260 200" role="img" aria-label="三角形相似面积比示意图"><line x1="130" y1="20" x2="40" y2="180" stroke="#1B3B5F" stroke-width="1.6"/><line x1="130" y1="20" x2="220" y2="180" stroke="#1B3B5F" stroke-width="1.6"/><line x1="40" y1="180" x2="220" y2="180" stroke="#1B3B5F" stroke-width="1.6"/><line x1="85" y1="100" x2="175" y2="100" stroke="#E8622C" stroke-width="1.6"/><circle cx="130" cy="20" r="3" fill="#16283E"/><text x="136" y="14" font-size="12" fill="#16283E">A</text><circle cx="40" cy="180" r="3" fill="#16283E"/><text x="24" y="198" font-size="12" fill="#16283E">B</text><circle cx="220" cy="180" r="3" fill="#16283E"/><text x="226" y="198" font-size="12" fill="#16283E">C</text><circle cx="85" cy="100" r="3" fill="#E8622C"/><text x="62" y="92" font-size="12" fill="#E8622C">D</text><circle cx="175" cy="100" r="3" fill="#E8622C"/><text x="181" y="92" font-size="12" fill="#E8622C">E</text><text x="130" y="122" font-size="11" fill="#5B6B7F" text-anchor="middle">示意图</text></svg>';
+const FIG_K = '<svg class="fig" viewBox="0 0 260 200" role="img" aria-label="一线三等角示意图"><line x1="30" y1="150" x2="230" y2="150" stroke="#1B3B5F" stroke-width="1.6"/><line x1="70" y1="150" x2="70" y2="90" stroke="#1B3B5F" stroke-width="1.2" stroke-dasharray="4 3"/><line x1="190" y1="150" x2="190" y2="90" stroke="#1B3B5F" stroke-width="1.2" stroke-dasharray="4 3"/><line x1="70" y1="90" x2="130" y2="150" stroke="#E8622C" stroke-width="1.6"/><line x1="190" y1="90" x2="130" y2="150" stroke="#E8622C" stroke-width="1.6"/><path d="M70 150 h-8 v-8 h8" stroke="#16283E" fill="none" stroke-width="1"/><path d="M190 150 h8 v-8 h-8" stroke="#16283E" fill="none" stroke-width="1"/><path d="M124.3 144.3 L130 138.6 L135.7 144.3" stroke="#16283E" fill="none" stroke-width="1"/><circle cx="130" cy="150" r="3" fill="#16283E"/><text x="134" y="168" font-size="12" fill="#16283E">A</text><circle cx="70" cy="90" r="3" fill="#16283E"/><text x="52" y="82" font-size="12" fill="#16283E">B</text><circle cx="70" cy="150" r="3" fill="#16283E"/><text x="52" y="168" font-size="12" fill="#16283E">D</text><circle cx="190" cy="90" r="3" fill="#16283E"/><text x="196" y="82" font-size="12" fill="#16283E">C</text><circle cx="190" cy="150" r="3" fill="#16283E"/><text x="196" y="168" font-size="12" fill="#16283E">E</text><text x="56" y="112" font-size="10" fill="#E8622C">4</text><text x="184" y="112" font-size="10" fill="#E8622C">6</text><text x="130" y="190" font-size="11" fill="#5B6B7F" text-anchor="middle">示意图（∠BDA = ∠AEC = 90°）</text></svg>';
+const FIG_MEAS = '<svg class="fig" viewBox="0 0 270 230" role="img" aria-label="测树高示意图"><line x1="20" y1="210" x2="260" y2="210" stroke="#1B3B5F" stroke-width="1.8"/><line x1="40" y1="210" x2="40" y2="40" stroke="#1B3B5F" stroke-width="2.2"/><line x1="100" y1="210" x2="100" y2="160" stroke="#1B3B5F" stroke-width="2"/><line x1="245" y1="210" x2="245" y2="175" stroke="#1B3B5F" stroke-width="2"/><line x1="40" y1="40" x2="100" y2="160" stroke="#E8622C" stroke-width="1.4" stroke-dasharray="5 4"/><line x1="100" y1="160" x2="125" y2="210" stroke="#E8622C" stroke-width="1.4" stroke-dasharray="5 4"/><line x1="40" y1="210" x2="125" y2="210" stroke="#1B3B5F" stroke-width="1.2" stroke-dasharray="4 3"/><line x1="185" y1="200" x2="185" y2="220" stroke="#1B3B5F" stroke-width="2"/><circle cx="40" cy="40" r="3" fill="#16283E"/><text x="28" y="30" font-size="12" fill="#16283E">A</text><circle cx="40" cy="210" r="3" fill="#16283E"/><text x="28" y="228" font-size="12" fill="#16283E">B</text><circle cx="100" cy="160" r="3" fill="#16283E"/><text x="86" y="152" font-size="12" fill="#16283E">C</text><circle cx="100" cy="210" r="3" fill="#16283E"/><text x="88" y="228" font-size="12" fill="#16283E">D</text><circle cx="125" cy="210" r="3" fill="#16283E"/><text x="130" y="228" font-size="12" fill="#16283E">E</text><circle cx="185" cy="210" r="3" fill="#E8622C"/><text x="176" y="238" font-size="12" fill="#E8622C">F</text><circle cx="245" cy="175" r="3" fill="#16283E"/><text x="234" y="166" font-size="12" fill="#16283E">G</text><circle cx="245" cy="210" r="3" fill="#16283E"/><text x="236" y="228" font-size="12" fill="#16283E">H</text><text x="128" y="196" font-size="11" fill="#5B6B7F">地面</text><text x="130" y="26" font-size="11" fill="#5B6B7F" text-anchor="middle">示意图</text></svg>';
+
+const QUESTIONS = [
+  {id:'q1', sec:'代数', kp:'判别式', diff:'基础', type:'mc',
+   stem:'方程 <b>x² − 2x − 3 = 0</b> 的根的判别式 <b>Δ</b> 的值为（　）',
+   opts:['−8','8','16','−16'], ans:2, src:'',
+   sol:'Δ = b² − 4ac = (−2)² − 4×1×(−3) = 4 + 12 = <b>16</b>。Δ &gt; 0，方程有两个不相等的实数根。'},
+  {id:'q2', sec:'代数', kp:'判别式', diff:'基础', type:'mc',
+   stem:'若关于 x 的方程 <b>x² − 2x + m = 0</b> 有两个不相等的实数根，则 m 的取值范围是（　）',
+   opts:['m &lt; 1','m ≤ 1','m &gt; 1','m ≥ 1'], ans:0, src:'',
+   sol:'Δ = (−2)² − 4×1×m = 4 − 4m &gt; 0，解得 <b>m &lt; 1</b>。“两个不相等的实数根”对应 Δ &gt; 0（不含等号）。'},
+  {id:'q3', sec:'代数', kp:'韦达定理', diff:'基础', type:'num', accept:['5'], placeholder:'如：13',
+   stem:'已知 x<sub>1</sub>、x<sub>2</sub> 是方程 <b>x² − 5x + 6 = 0</b> 的两个根，则 x<sub>1</sub> + x<sub>2</sub> = <span class="blank">　　</span>',
+   src:'',
+   sol:'由韦达定理：x<sub>1</sub> + x<sub>2</sub> = −b/a = −(−5)/1 = <b>5</b>；x<sub>1</sub>·x<sub>2</sub> = c/a = 6。'},
+  {id:'q4', sec:'代数', kp:'韦达定理', diff:'中档', type:'num', accept:['13'], placeholder:'如：13',
+   stem:'已知 x<sub>1</sub>、x<sub>2</sub> 是方程 <b>x² − 5x + 6 = 0</b> 的两个根，则 x<sub>1</sub>² + x<sub>2</sub>² = <span class="blank">　　</span>',
+   src:'',
+   sol:'x<sub>1</sub>² + x<sub>2</sub>² = (x<sub>1</sub>+x<sub>2</sub>)² − 2x<sub>1</sub>x<sub>2</sub> = 5² − 2×6 = 25 − 12 = <b>13</b>。先求“和”与“积”，再作恒等变形。'},
+  {id:'q5', sec:'代数', kp:'判别式', diff:'中档', type:'mc',
+   stem:'已知关于 x 的方程 <b>x² − (2m + 1)x + m² − 2 = 0</b> 有两个不相等的实数根，则 m 的取值范围是（　）',
+   opts:['m &gt; −9/4','m &lt; −9/4','m &gt; 9/4','m ≥ −9/4'], ans:0, src:'源自错题①·第(2)问',
+   sol:'Δ = (2m+1)² − 4(m²−2) = 4m² + 4m + 1 − 4m² + 8 = <b>4m + 9</b>。两个不等实根 ⟹ 4m + 9 &gt; 0 ⟹ <b>m &gt; −9/4</b>。易错：展开 (2m+1)² 漏中间项 4m，或把“两个不相等”写成 Δ ≥ 0。'},
+  {id:'q6', sec:'代数', kp:'新定义应用', diff:'中档', type:'num', accept:['0'], placeholder:'如：0',
+   stem:'定义：若一元二次方程 ax² + bx + c = 0（a ≠ 0）的两根 x<sub>1</sub>、x<sub>2</sub> 满足 <b>x<sub>1</sub>² + x<sub>2</sub>² = x<sub>1</sub>x<sub>2</sub> + 4</b>，则称该方程为“和谐方程”。若方程 <b>x² − 2x + m = 0</b> 是“和谐方程”，则 m = <span class="blank">　　</span>',
+   src:'错题①同型 · 新定义',
+   sol:'由韦达定理：x<sub>1</sub>+x<sub>2</sub> = 2，x<sub>1</sub>x<sub>2</sub> = m。代入条件：(x<sub>1</sub>+x<sub>2</sub>)² − 2x<sub>1</sub>x<sub>2</sub> = x<sub>1</sub>x<sub>2</sub> + 4，即 4 − 2m = m + 4，解得 <b>m = 0</b>。检验：Δ = 4 − 0 = 4 &gt; 0，符合有两个根，成立。易错：求出参数后忘记用判别式检验。'},
+  {id:'q7', sec:'代数', kp:'韦达定理', diff:'中档', type:'mc',
+   stem:'已知关于 x 的方程 <b>x² − (m + 1)x + m = 0</b> 的两个实数根为 x<sub>1</sub>、x<sub>2</sub>，且 x<sub>1</sub>² + x<sub>2</sub>² = 7，则 m 的值为（　）',
+   opts:['m = ±√6','m = √6','m = −√6','m = ±3'], ans:0, src:'',
+   sol:'Δ = (m+1)² − 4m = (m−1)² ≥ 0，恒有实数根。x<sub>1</sub>+x<sub>2</sub> = m+1，x<sub>1</sub>x<sub>2</sub> = m。x<sub>1</sub>²+x<sub>2</sub>² = (m+1)² − 2m = m² + 1 = 7 ⟹ m² = 6 ⟹ <b>m = ±√6</b>。两个值均满足 Δ ≥ 0，都保留。'},
+  {id:'q8', sec:'几何', kp:'折叠性质', diff:'基础', type:'mc',
+   stem:'如图，矩形 ABCD 中 AB = 3，AD = 5，点 E 在 AB 上。将矩形纸片沿 DE 折叠，点 A 的对应点 A′ 恰好落在 BC 上，则 <b>AE 的长为（　）</b>' + FIG_DG,
+   opts:['5/3','4/3','5/4','3/5'], ans:0, src:'源自错题②·第一步',
+   sol:'折叠即轴对称：<b>DE 垂直平分 AA′</b>，对应点 D、E 到 A 与 A′ 距离相等。由 DA′ = DA = 5、DC = 3，Rt△A′CD 中得 A′C = √(5²−3²) = 4，故 A′B = 5 − 4 = 1。设 AE = x，则 A′E = x，BE = 3 − x，在 Rt△A′BE 中：x² = (3−x)² + 1²，解得 <b>x = 5/3</b>。'},
+  {id:'q9', sec:'几何', kp:'折叠性质', diff:'基础', type:'mc',
+   stem:'在矩形折叠问题中，折痕与对应点连线的位置关系是（　）',
+   opts:['互相垂直但不一定平分','互相垂直且平分','互相平分但不一定垂直','没有确定关系'], ans:1, src:'',
+   sol:'折叠的本质是轴对称：对应点关于折痕对称，所以<b>折痕是对应点连线的垂直平分线</b>。这条性质是折叠题列方程的关键。'},
+  {id:'q10', sec:'几何', kp:'勾股建方程', diff:'中档', type:'mc',
+   stem:'承上题：矩形 ABCD 中 AB = 3，AD = 5，点 E、F 分别在 AB、BC 上。沿 DE 折叠使点 A 落在 BC 上的 A′，再沿 DF 折叠使点 C 落在 DA′ 上的 C′，连接 EC′，则 <b>EC′ 的长为（　）</b>' + FIG_DG,
+   opts:['√61/3','√61/2','√31/3','√73/3'], ans:0, src:'源自错题②·原题',
+   sol:'由第 8 题知 A′B = 1、AE = A′E = 5/3。用坐标法：设 A(0,0)、B(3,0)、D(0,5)，则 A′(3,1)、E(5/3,0)。折叠得 DC′ = DC = 3，C′ 在 DA′ 上，由 C′ = D + 3/5·(A′−D) 得 C′(9/5, 13/5)。故 EC′ = √[(9/5 − 5/3)² + (13/5)²] = √(4/225 + 169/25) = √(1525/225) = <b>√61/3</b>。易错：C′ 的位置要由“DC′ = DC”结合“点在 DA′ 上”确定。'},
+  {id:'q11', sec:'几何', kp:'勾股建方程', diff:'中档', type:'num', accept:['2*sqrt(5)','sqrt(20)','2*sqrt5','4.47213595499958'], placeholder:'如：2*sqrt(5)',
+   stem:'矩形纸片 ABCD 中，AB = 4，AD = 8。将纸片折叠，使点 A 落在对角线 BD 上的点 E 处，且 AE ⊥ BD，折痕为 FG（点 F 在 AD 上，点 G 在 AB 上）。则 <b>FG 的长 = <span class="blank">　　</span></b>' + FIG_Q11,
+   src:'折叠综合',
+   sol:'折叠 ⟹ FG 垂直平分 AE，又 AE ⊥ BD，故 FG ∥ BD。取坐标 A(0,0)、B(4,0)、D(0,8)：BD 为 2x + y = 8，垂足 E = (16/5, 8/5)，AE 中点 M = (8/5, 4/5)。FG 过 M 且平行 BD：y = −2x + 4，得 F(0,4)、G(2,0)。FG = √(2² + 4²) = √20 = <b>2√5</b>。'},
+  {id:'q12', sec:'相似', kp:'比例线段', diff:'基础', type:'mc',
+   stem:'四条线段 a、b、c、d 成比例（a:b = c:d），其中 b = 3 cm，c = 6 cm，d = 9 cm，则 a 的长度为（　）',
+   opts:['8 cm','2 cm','4 cm','1 cm'], ans:1, src:'源自月考真卷第1题',
+   sol:'成比例线段满足 a:b = c:d，即内项之积 = 外项之积：a×d = b×c ⟹ a×9 = 3×6 ⟹ <b>a = 2 cm</b>。易错：先写对比例顺序（a:b = c:d），再交叉相乘。'},
+  {id:'q13', sec:'相似', kp:'比例线段', diff:'基础', type:'mc',
+   stem:'如图，a∥b∥c，直线 m 分别交 a、b、c 于点 A、B、C，直线 n 分别交 a、b、c 于点 D、E、F。若 AB = 6，BC = 4，EF = 3，则 DE 的长为（　）' + FIG_PROP,
+   opts:['1.5','4.5','7.5','10.5'], ans:1, src:'源自月考真卷第2题',
+   sol:'平行线分线段成比例：AB/BC = DE/EF ⟹ 6/4 = DE/3 ⟹ DE = <b>4.5</b>。注意对应：AB 与 DE 对应，BC 与 EF 对应。'},
+  {id:'q14', sec:'相似', kp:'相似性质与模型', diff:'中档', type:'mc',
+   stem:'如图，在△ABC 中，点 D、E 分别在边 AB、AC 上，且 DE∥BC。若 S△ADE = S四边形DBCE，则 AD:DB =（　）' + FIG_TRI,
+   opts:['1:√2','1:1','1:(√2−1)','√2:1'], ans:2, src:'源自月考真卷第6题',
+   sol:'S△ADE = S四边形DBCE ⟹ S△ADE = ½S△ABC。相似三角形面积比 = 相似比的平方：S△ADE/S△ABC = (AD/AB)² = 1/2 ⟹ AD/AB = 1/√2，故 AD:DB = AD:(AB−AD) = <b>1:(√2−1)</b>。易错：面积比是相似比的平方，要先开方。'},
+  {id:'q15', sec:'相似', kp:'黄金分割·应用', diff:'中档', type:'mc',
+   stem:'点 P 为线段 AB 的黄金分割点（AP &gt; PB），若 PB = 2 cm，则 AP 的长为（　）cm（结果保留根号）',
+   opts:['√5 + 1','√5 − 1','2√5','√5 ⁄ 2'], ans:0, src:'源自月考真卷第10题',
+   sol:'黄金分割：较长部分 AP 满足 AP² = AB·PB，即 AP² = (AP + PB)·PB。代入 PB = 2：AP² = 2AP + 4 ⟹ AP = 1 + √5（负值舍去），即 <b>AP = √5 + 1 cm</b>。也可直接用 AP/PB = (√5+1)/2。'},
+  {id:'q16', sec:'相似', kp:'相似性质与模型', diff:'中档', type:'num', accept:['10'], placeholder:'如：10',
+   stem:'如图，△ABC 为等腰直角三角形，∠BAC = 90°，AB = AC，D、A、E 三点在直线 l 上，且 ∠BDA = ∠AEC = 90°。若 BD = 4，CE = 6，则 DE = <span class="blank">　　</span>' + FIG_K,
+   src:'源自月考真卷第24题(1)',
+   sol:'这是“一线三等角”模型。∠DAB + ∠EAC = 90°（由平角减 ∠BAC 得），而 ∠DBA + ∠DAB = 90° ⟹ ∠DBA = ∠EAC；又 ∠BDA = ∠AEC = 90°、AB = AC ⟹ △ABD ≅ △CAE（AAS）。故 AD = CE = 6，AE = BD = 4，DE = AD + AE = <b>10</b>。'},
+  {id:'q17', sec:'相似', kp:'黄金分割·应用', diff:'中档', type:'num', accept:['6'], placeholder:'如：6',
+   stem:'为测量树高 AB，兴趣小组的方案如图：在 D 处竖立 1.5 m 高的标杆 CD（DE = 1.5 m），E、C、A 三点共线；在 E 前方 3 m 的 F 处放置平面镜，小明在 H 处通过平面镜看到树顶 A（FH = 2.4 m，人眼高 GH = 1.6 m）。则树高 AB = <span class="blank">　　</span> 米' + FIG_MEAS,
+   src:'源自月考真卷第21题',
+   sol:'由 E、C、A 共线：△CDE ∽ △ABE ⟹ AB/CD = BE/DE ⟹ AB = BE = BD + 1.5。由平面镜反射：∠AFB = ∠GFH，△ABF ∽ △GHF ⟹ AB/GH = BF/FH ⟹ AB = 2/3·BF，而 BF = BD + 4.5。联立：BD + 1.5 = 2/3(BD + 4.5) ⟹ BD = 4.5 ⟹ <b>AB = 6 米</b>。'}
+];
+const $ = function(id){ return document.getElementById(id); };
+const state = {};
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* 数值表达式解析：支持 + - * / ( ) sqrt(√)、小数、分数 */
+function parseNum(raw){
+  let s = String(raw).toLowerCase()
+    .replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/－/g,'-')
+    .replace(/＋/g,'+').replace(/（/g,'(').replace(/）/g,')')
+    .replace(/√/g,'sqrt')
+    .replace(/π/g,'(3.141592653589793)')
+    .replace(/\s+/g,'')
+    .replace(/(\d)(sqrt)/g,'$1*sqrt')
+    .replace(/\)(\d)/g,')*$1');
+  if(!s) return NaN;
+  let i = 0;
+  const peek = function(){ return s[i]; };
+  const expr = function(){
+    let v = term();
+    while(peek() === '+' || peek() === '-'){
+      const op = peek(); i++;
+      const r = term();
+      v = op === '+' ? v + r : v - r;
+    }
+    return v;
+  };
+  const term = function(){
+    let v = factor();
+    while(peek() === '*' || peek() === '/'){
+      const op = peek(); i++;
+      const r = factor();
+      if(op === '*'){ v = v * r; }
+      else { if(Math.abs(r) < 1e-12) return NaN; v = v / r; }
+    }
+    return v;
+  };
+  const factor = function(){
+    const c = peek();
+    if(c === '('){ i++; const v = expr(); if(peek() === ')') i++; return v; }
+    if(c === '-'){ i++; return -factor(); }
+    if(c === '+'){ i++; return factor(); }
+    if(s.startsWith('sqrt', i)){
+      i += 4;
+      let v;
+      if(peek() === '('){ i++; v = expr(); if(peek() === ')') i++; }
+      else { v = factor(); }
+      return Math.sqrt(v);
+    }
+    let j = i;
+    while(i < s.length && /[0-9.]/.test(s[i])) i++;
+    if(i === j) return NaN;
+    return parseFloat(s.slice(j, i));
+  };
+  const v = expr();
+  if(i !== s.length) return NaN;
+  return v;
+}
+function numOk(q, val){
+  const vv = parseNum(val);
+  if(!isFinite(vv)) return false;
+  for(let k = 0; k < q.accept.length; k++){
+    const av = parseNum(q.accept[k]);
+    if(isFinite(av) && Math.abs(av - vv) < 1e-6) return true;
+  }
+  return false;
+}
+
+function buildCard(q, idx){
+  const card = document.createElement('article');
+  card.className = 'qcard';
+  card.id = 'card-' + q.id;
+  const qno = String(idx + 1).padStart(2, '0');
+  let ansHtml;
+  if(q.type === 'mc'){
+    ansHtml = '<div class="opts">' + q.opts.map(function(o, k){
+      return '<button type="button" class="opt" data-opt="' + k + '"><span class="key">' + String.fromCharCode(65 + k) + '</span><span>' + o + '</span></button>';
+    }).join('') + '</div>';
+  }else{
+    ansHtml = '<div class="num-row"><input class="num-input" type="text" inputmode="decimal" autocomplete="off" placeholder="' + q.placeholder + '" aria-label="第 ' + qno + ' 题答案输入"><button type="button" class="btn btn-navy num-go">提交</button></div>';
+  }
+  card.innerHTML =
+    '<div class="qmeta">' +
+      '<span class="qno">' + qno + '</span>' +
+      '<span class="tag diff-' + (q.diff === '基础' ? 'base' : 'mid') + '">' + q.diff + '</span>' +
+      '<span class="tag kp">' + q.kp + '</span>' +
+      '<span class="tag sec-tag">' + q.sec + '</span>' +
+      (q.src ? '<span class="src">' + q.src + '</span>' : '') +
+    '</div>' +
+    '<div class="stem">' + q.stem + '</div>' +
+    ansHtml +
+    '<div class="fb"></div>';
+  if(q.type === 'mc'){
+    const opts = card.querySelectorAll('.opt');
+    for(let k = 0; k < opts.length; k++){
+      opts[k].addEventListener('click', function(){ answer(q, parseInt(opts[k].getAttribute('data-opt'), 10)); });
+    }
+  }else{
+    const inp = card.querySelector('.num-input');
+    const go = card.querySelector('.num-go');
+    const submit = function(){ const v = inp.value.trim(); if(v !== '') answer(q, v); };
+    go.addEventListener('click', submit);
+    inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') submit(); });
+  }
+  return card;
+}
+
+const SECTIONS = [
+  {sec:'代数', badge:'1', name:'一元二次方程', meta:'7 题', note:'对应错题①“和谐方程”：先翻译新定义，再用判别式与韦达定理，求出参数记得检验。', color:''},
+  {sec:'几何', badge:'2', name:'矩形折叠 · 勾股定理', meta:'4 题', note:'对应错题②矩形折叠求 EC′：标出相等线段 → 设元列勾股方程 → 复杂位置用坐标法。', color:'style="background:var(--accent)"'},
+  {sec:'相似', badge:'3', name:'相似三角形（月考考纲补充）', meta:'6 题', note:'依据某JD附中第一次月考范围补充：比例线段、平行线分线段成比例、面积比、黄金分割、一线三等角、测量应用。', color:''}
+];
+function render(){
+  const wrap = $('quizContainer');
+  wrap.innerHTML = '';
+  let cur = '';
+  for(let i = 0; i < QUESTIONS.length; i++){
+    const q = QUESTIONS[i];
+    if(q.sec !== cur){
+      cur = q.sec;
+      const s = SECTIONS.find(function(x){ return x.sec === cur; });
+      if(s){
+        const head = document.createElement('div');
+        head.className = 'sec-block';
+        head.innerHTML = '<span class="sec-badge" ' + s.color + '>' + s.badge + '</span><span class="sec-name">' + s.name + '</span><span class="sec-meta">' + s.meta + '</span>';
+        const note = document.createElement('p');
+        note.className = 'sec-note';
+        note.textContent = s.note;
+        wrap.appendChild(head);
+        wrap.appendChild(note);
+      }
+    }
+    wrap.appendChild(buildCard(q, i));
+  }
+}
+
+function answer(q, val){
+  if(state[q.id]) return;
+  let correct, chosen = null;
+  if(q.type === 'mc'){
+    chosen = val;
+    correct = (val === q.ans);
+  }else{
+    correct = numOk(q, val);
+  }
+  state[q.id] = correct ? 'ok' : 'no';
+  const card = $('card-' + q.id);
+  card.classList.add(correct ? 'correct' : 'wrong');
+  if(q.type === 'mc'){
+    const opts = card.querySelectorAll('.opt');
+    for(let k = 0; k < opts.length; k++){
+      opts[k].classList.add('disabled');
+      opts[k].disabled = true;
+      if(k === q.ans) opts[k].classList.add('is-ans');
+      if(k === chosen && !correct) opts[k].classList.add('is-wrong');
+    }
+  }else{
+    const inp = card.querySelector('.num-input');
+    inp.disabled = true;
+    card.querySelector('.num-go').disabled = true;
+    inp.classList.add(correct ? 'in-ok' : 'in-bad');
+  }
+  const fb = card.querySelector('.fb');
+  fb.classList.add('show');
+  fb.innerHTML =
+    '<div class="verdict ' + (correct ? 'v-ok' : 'v-bad') + '">' + (correct ? '回答正确' : '回答错误') + '</div>' +
+    (q.type === 'num' && !correct ? '<div class="your-ans">你的答案：' + esc(val) + '</div>' : '') +
+    '<div class="sol">' + q.sol + '</div>';
+  updateProgress();
+  if(Object.keys(state).length === QUESTIONS.length) showReport();
+}
+
+function updateProgress(){
+  const n = Object.keys(state).length;
+  let ok = 0;
+  for(const k in state) if(state[k] === 'ok') ok++;
+  $('progText').textContent = '已答 ' + n + ' / ' + QUESTIONS.length;
+  $('scorePill').textContent = '答对 ' + ok;
+  $('progFill').style.width = (n / QUESTIONS.length * 100) + '%';
+}
+
+function blockRate(sec){
+  let total = 0, ok = 0;
+  for(let i = 0; i < QUESTIONS.length; i++){
+    if(QUESTIONS[i].sec === sec){
+      total++;
+      if(state[QUESTIONS[i].id] === 'ok') ok++;
+    }
+  }
+  return total ? Math.round(ok / total * 100) : 0;
+}
+
+function showReport(){
+  let ok = 0, no = 0;
+  for(let i = 0; i < QUESTIONS.length; i++){
+    if(state[QUESTIONS[i].id] === 'ok') ok++; else no++;
+  }
+  const rate = Math.round(ok / QUESTIONS.length * 100);
+  $('ringScore').textContent = ok;
+  $('ringTotal').textContent = '/ ' + QUESTIONS.length + ' 题';
+  $('ringArc').style.strokeDashoffset = (339.292 * (1 - ok / QUESTIONS.length)).toFixed(1);
+  $('statOk').textContent = ok + ' 题';
+  $('statNo').textContent = no + ' 题';
+  $('statRate').textContent = rate + '%';
+  $('statAlg').textContent = blockRate('代数') + '%';
+  $('statGeo').textContent = blockRate('几何') + '%';
+  $('statSim').textContent = blockRate('相似') + '%';
+  const rl = $('retryList');
+  const wrong = [];
+  for(let i = 0; i < QUESTIONS.length; i++) if(state[QUESTIONS[i].id] === 'no') wrong.push(QUESTIONS[i]);
+  if(wrong.length){
+    rl.innerHTML = wrong.map(function(q){
+      const idx = QUESTIONS.indexOf(q) + 1;
+      return '<button type="button" class="retry-q" data-id="' + q.id + '">第 ' + idx + ' 题 · ' + q.kp + '</button>';
+    }).join('');
+    const btns = rl.querySelectorAll('.retry-q');
+    for(let i = 0; i < btns.length; i++){
+      btns[i].addEventListener('click', function(){ retryOne(btns[i].getAttribute('data-id')); });
+    }
+  }else{
+    rl.innerHTML = '<span class="all-ok">全部答对，继续保持！</span>';
+  }
+  renderChart();
+  $('report').hidden = false;
+  $('report').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderChart(){
+  const kps = ['判别式','韦达定理','新定义应用','折叠性质','勾股建方程','比例线段','相似性质与模型','黄金分割·应用'];
+  const data = kps.map(function(kp){
+    let total = 0, ok = 0;
+    for(let i = 0; i < QUESTIONS.length; i++){
+      if(QUESTIONS[i].kp === kp){
+        total++;
+        if(state[QUESTIONS[i].id] === 'ok') ok++;
+      }
+    }
+    return {name: kp, value: total ? Math.round(ok / total * 100) : 0};
+  });
+  const el = $('chartKp');
+  if(typeof echarts !== 'undefined' && echarts.init){
+    const ch = echarts.init(el);
+    ch.setOption({
+      grid:{left:8, right:44, top:8, bottom:8, containLabel:true},
+      xAxis:{type:'value', max:100, axisLabel:{formatter:'{value}%', fontSize:11, color:'#5B6B7F'}, splitLine:{lineStyle:{color:'#EEF2F7'}}},
+      yAxis:{type:'category', data:data.map(function(d){ return d.name; }), axisLine:{show:false}, axisTick:{show:false}, axisLabel:{fontSize:13, color:'#16283E'}},
+      series:[{type:'bar', data:data.map(function(d){ return d.value; }), barWidth:14,
+        itemStyle:{color:'#1B3B5F', borderRadius:[0,7,7,0]},
+        label:{show:true, position:'right', formatter:function(p){ return p.value + '%'; }, fontSize:12, color:'#16283E'}}]
+    });
+  }else{
+    el.innerHTML = '<div class="css-bars">' + data.map(function(d){
+      return '<div class="cssbar"><div class="lb"><span>' + esc(d.name) + '</span><b>' + d.value + '%</b></div><div class="bar-track"><div class="bar-fill" style="width:' + d.value + '%"></div></div></div>';
+    }).join('') + '</div>';
+  }
+}
+
+function rebuildCard(q){
+  const wrap = $('quizContainer');
+  const old = $('card-' + q.id);
+  const idx = Array.prototype.indexOf.call(wrap.children, old);
+  const next = wrap.children[idx + 1];
+  old.remove();
+  const card = buildCard(q, idx);
+  if(next) wrap.insertBefore(card, next); else wrap.appendChild(card);
+}
+
+function retryOne(qid){
+  delete state[qid];
+  const q = QUESTIONS.find(function(x){ return x.id === qid; });
+  rebuildCard(q);
+  updateProgress();
+  $('report').hidden = true;
+  const card = $('card-' + qid);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function retryAllWrong(){
+  const wrong = [];
+  for(let i = 0; i < QUESTIONS.length; i++) if(state[QUESTIONS[i].id] === 'no') wrong.push(QUESTIONS[i]);
+  if(!wrong.length) return;
+  for(let i = 0; i < wrong.length; i++) delete state[wrong[i].id];
+  for(let i = 0; i < wrong.length; i++) rebuildCard(wrong[i]);
+  $('report').hidden = true;
+  updateProgress();
+  const first = $('card-' + wrong[0].id);
+  if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function resetAll(){
+  for(const k in state) delete state[k];
+  render();
+  updateProgress();
+  $('report').hidden = true;
+  $('quiz').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+$('startBtn').addEventListener('click', function(){ $('quiz').scrollIntoView({behavior:'smooth', block:'start'}); });
+$('retryWrongBtn').addEventListener('click', retryAllWrong);
+$('resetAllBtn').addEventListener('click', resetAll);
+render();
+updateProgress();
+</script>
+</body>
+</html>
