@@ -160,6 +160,7 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
     <h1>陈佳怡 · 数学错题拔高练习</h1>
     <p class="sub">依据近期 2 道错题定制 · 结合月考考纲补充相似专项 · 作答即判分，附详细解析</p>
     <div class="meta-chips">
+      <span class="chip" id="updChip">最近更新：…</span>
       <span class="chip">学生：陈佳怡</span>
       <span class="chip">科目：数学</span>
       <span class="chip">进度：九年级下册</span>
@@ -375,6 +376,7 @@ const QUESTIONS = [
    opts:['10%','19%','20%','90%'], ans:0, src:'增长率模型变式',
    sol:'每次降价后价格乘 (1−x)：100(1−x)² = 81 ⟹ (1−x)² = 0.81 ⟹ 1−x = 0.9 ⟹ <b>x = 0.1 = 10%</b>。易错：开方后忘记开平方（把 0.81 当结果）；负根 1−x = −0.9（x = 1.9）不合实际，舍去。'}
 ];
+const UPDATED_AT = '2026-10-26 22:01';
 const $ = function(id){ return document.getElementById(id); };
 const state = {};
 
@@ -677,6 +679,7 @@ function resetAll(){
 $('startBtn').addEventListener('click', function(){ $('quiz').scrollIntoView({behavior:'smooth', block:'start'}); });
 $('retryWrongBtn').addEventListener('click', retryAllWrong);
 $('resetAllBtn').addEventListener('click', resetAll);
+$('updChip').textContent = '最近更新：' + UPDATED_AT;
 render();
 updateProgress();
 </script>
