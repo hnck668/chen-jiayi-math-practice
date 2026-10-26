@@ -145,7 +145,7 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
 
 <header class="topbar">
   <div class="wrap">
-    <div class="progress-text" id="progText">已答 0 / 17</div>
+    <div class="progress-text" id="progText">已答 0 / 19</div>
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     <div class="score-pill" id="scorePill">答对 0</div>
   </div>
@@ -163,7 +163,7 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
       <span class="chip">学生：陈佳怡</span>
       <span class="chip">科目：数学</span>
       <span class="chip">进度：九年级下册</span>
-      <span class="chip">题量：17 题</span>
+      <span class="chip">题量：19 题</span>
       <span class="chip">建议用时：30 分钟</span>
     </div>
     <div class="hero-cta"><button type="button" class="btn btn-primary" id="startBtn">开始练习</button></div>
@@ -222,6 +222,27 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
         </details>
       </article>
 
+      <article class="diag-card">
+        <div class="diag-head"><h3 class="diag-title">错题 ③ 增长率列方程</h3><span class="diag-src">一元二次方程 · 应用</span></div>
+        <div class="chip-row">
+          <span class="kp-chip">增长率模型 (1+x)ⁿ</span>
+          <span class="kp-chip">列方程 · 总量校验</span>
+        </div>
+        <p class="diag-sub">易错点</p>
+        <ul>
+          <li>把“第一季度合计 42 万元”误写成 10(1+x)²=42，漏掉 1 月份的 10 万元；</li>
+          <li>把逐月增长误当等差：3 月份写成 10(1+2x)；</li>
+          <li>列式后不回代验证总数。</li>
+        </ul>
+        <p class="diag-sub">突破对策</p>
+        <div class="fix">① 画时间轴：1 月 10 万 → 2 月 10(1+x) → 3 月 10(1+x)²；② 记住增长率模型：n 期后 = 原值×(1+x)ⁿ；③ 列完式用特殊值（如 x=0.1）回代检验，总数对得上才放心。</div>
+        <details>
+          <summary>查看原题</summary>
+          <div class="orig-text">6. 某公司今年销售一种产品，一月份获得利润 10 万元，由于产品畅销，利润逐月增加，第一季度共获利 42 万元，已知二月份和三月份利润的月增长率相同。设二、三月份的月增长率为 x，那么 x 满足的方程为（　）<br>A. 10(1+x)²=42　B. 10+10(1+x)²=42<br>C. 10+10(1+x)+10(1+2x)=42　D. 10+10(1+x)+10(1+x)²=42<br>（正确答案：D）</div>
+          <img class="mini-img" src="assets/wrong-q3.jpg" alt="错题三原题卷面">
+        </details>
+      </article>
+
     </div>
   </section>
 
@@ -237,7 +258,7 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
             <circle cx="64" cy="64" r="54" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10"/>
             <circle id="ringArc" cx="64" cy="64" r="54" fill="none" stroke="#E8622C" stroke-width="10" stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="339.292" transform="rotate(-90 64 64)" style="transition:stroke-dashoffset 1s ease"/>
           </svg>
-          <div class="ring-num"><span class="big" id="ringScore">0</span><span class="small" id="ringTotal">/ 17 题</span></div>
+          <div class="ring-num"><span class="big" id="ringScore">0</span><span class="small" id="ringTotal">/ 19 题</span></div>
         </div>
         <div class="rep-stats">
           <div class="row"><span>答对</span><b id="statOk">0 题</b></div>
@@ -258,7 +279,7 @@ summary{cursor:pointer;color:var(--navy2);font-weight:600}
       <div class="retry-list" id="retryList"></div>
       <div class="btn-group">
         <button type="button" class="btn btn-navy" id="retryWrongBtn">重练全部错题</button>
-        <button type="button" class="btn btn-ghost" id="resetAllBtn">重新开始（全部 17 题）</button>
+        <button type="button" class="btn btn-ghost" id="resetAllBtn">重新开始（全部 19 题）</button>
       </div>
     </div>
   </section>
@@ -344,7 +365,15 @@ const QUESTIONS = [
   {id:'q17', sec:'相似', kp:'黄金分割·应用', diff:'中档', type:'num', accept:['6'], placeholder:'如：6',
    stem:'为测量树高 AB，兴趣小组的方案如图：在 D 处竖立 1.5 m 高的标杆 CD（DE = 1.5 m），E、C、A 三点共线；在 E 前方 3 m 的 F 处放置平面镜，小明在 H 处通过平面镜看到树顶 A（FH = 2.4 m，人眼高 GH = 1.6 m）。则树高 AB = <span class="blank">　　</span> 米' + FIG_MEAS,
    src:'源自月考真卷第21题',
-   sol:'由 E、C、A 共线：△CDE ∽ △ABE ⟹ AB/CD = BE/DE ⟹ AB = BE = BD + 1.5。由平面镜反射：∠AFB = ∠GFH，△ABF ∽ △GHF ⟹ AB/GH = BF/FH ⟹ AB = 2/3·BF，而 BF = BD + 4.5。联立：BD + 1.5 = 2/3(BD + 4.5) ⟹ BD = 4.5 ⟹ <b>AB = 6 米</b>。'}
+   sol:'由 E、C、A 共线：△CDE ∽ △ABE ⟹ AB/CD = BE/DE ⟹ AB = BE = BD + 1.5。由平面镜反射：∠AFB = ∠GFH，△ABF ∽ △GHF ⟹ AB/GH = BF/FH ⟹ AB = 2/3·BF，而 BF = BD + 4.5。联立：BD + 1.5 = 2/3(BD + 4.5) ⟹ BD = 4.5 ⟹ <b>AB = 6 米</b>。'},
+  {id:'q18', sec:'代数', kp:'增长率应用', diff:'基础', type:'mc',
+   stem:'某公司今年 1 月份利润为 10 万元，因产品畅销，2、3 月份利润逐月增长，且月增长率相同，第一季度共获利 42 万元。设二、三月份的月增长率为 x，则 x 满足的方程为（　）',
+   opts:['10(1+x)²=42','10+10(1+x)²=42','10+10(1+x)+10(1+2x)=42','10+10(1+x)+10(1+x)²=42'], ans:3, src:'源自期中卷第6题（错题）',
+   sol:'2 月利润为 10(1+x)，3 月利润为 10(1+x)²，一季度合计 42 万元：<b>10 + 10(1+x) + 10(1+x)² = 42</b>，选 D。易错：漏掉 1 月份的 10 万元（写成 10(1+x)²=42），或把逐月增长误当等差（10(1+2x)）。'},
+  {id:'q19', sec:'代数', kp:'增长率应用', diff:'中档', type:'mc',
+   stem:'某商品原价 100 元，连续两次降价，每次降价的百分率相同，降价后售价为 81 元。设每次降价的百分率为 x，则 x 的值是（　）',
+   opts:['10%','19%','20%','90%'], ans:0, src:'增长率模型变式',
+   sol:'每次降价后价格乘 (1−x)：100(1−x)² = 81 ⟹ (1−x)² = 0.81 ⟹ 1−x = 0.9 ⟹ <b>x = 0.1 = 10%</b>。易错：开方后忘记开平方（把 0.81 当结果）；负根 1−x = −0.9（x = 1.9）不合实际，舍去。'}
 ];
 const $ = function(id){ return document.getElementById(id); };
 const state = {};
@@ -456,7 +485,7 @@ function buildCard(q, idx){
 }
 
 const SECTIONS = [
-  {sec:'代数', badge:'1', name:'一元二次方程', meta:'7 题', note:'对应错题①“和谐方程”：先翻译新定义，再用判别式与韦达定理，求出参数记得检验。', color:''},
+  {sec:'代数', badge:'1', name:'一元二次方程', meta:'9 题', note:'对应错题①“和谐方程”与错题③“增长率列方程”：先翻译条件，再列方程、解方程，求出参数记得检验。', color:''},
   {sec:'几何', badge:'2', name:'矩形折叠 · 勾股定理', meta:'4 题', note:'对应错题②矩形折叠求 EC′：标出相等线段 → 设元列勾股方程 → 复杂位置用坐标法。', color:'style="background:var(--accent)"'},
   {sec:'相似', badge:'3', name:'相似三角形（月考考纲补充）', meta:'6 题', note:'依据某JD附中第一次月考范围补充：比例线段、平行线分线段成比例、面积比、黄金分割、一线三等角、测量应用。', color:''}
 ];
@@ -576,7 +605,7 @@ function showReport(){
 }
 
 function renderChart(){
-  const kps = ['判别式','韦达定理','新定义应用','折叠性质','勾股建方程','比例线段','相似性质与模型','黄金分割·应用'];
+  const kps = ['判别式','韦达定理','新定义应用','增长率应用','折叠性质','勾股建方程','比例线段','相似性质与模型','黄金分割·应用'];
   const data = kps.map(function(kp){
     let total = 0, ok = 0;
     for(let i = 0; i < QUESTIONS.length; i++){
