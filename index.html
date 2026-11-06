@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>陈佳怡数学错题练习</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;}
+body{background:#fff;padding:16px;color:#222;max-width:800px;margin:0 auto;}
+h1{font-size:24px;text-align:center;margin-bottom:16px;}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab{flex:1;text-align:center;padding:10px 6px;border-radius:8px;background:#e8edf7;cursor:pointer;font-weight:500;font-size:14px;min-width:80px;}
+.tab.active{background:#2563eb;color:#fff;}
+.card{border:1px solid #eee;border-radius:12px;padding:16px;margin-bottom:16px;}
+.info{color:#666;font-size:14px;margin-bottom:10px;}
+.tag-item{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;margin:2px;background:#dbeafe;color:#2563eb;cursor:pointer;}
+.tag-item.weak{background:#fee2e2;color:#dc2626;}
+.q-title{font-weight:bold;font-size:16px;margin:10px 0;line-height:1.6;}
+.opt-line{margin:8px 0;padding:6px 8px;border-radius:6px;border:1px solid #eee;cursor:pointer;}
+.opt-line:hover{background:#f5f8ff;}
+.input-ans{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:16px;margin:8px 0;}
+.btn{padding:10px 14px;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin:4px;}
+.btn-blue{background:#2563eb;color:#fff;}
+.btn-green{background:#16a34a;color:#fff;}
+.btn-orange{background:#f97316;color:#fff;}
+.btn-gray{background:#6b7280;color:#fff;}
+.answer-block{margin-top:12px;padding:12px;background:#f8fafc;border-radius:8px;display:none;}
+.extend-title{margin-top:20px;font-weight:bold;color:#2563eb;}
+.stat-row{margin:6px 0;font-size:14px;}
+.loading{text-align:center;padding:30px;color:#666;}
+</style>
+</head>
+<body>
+<h1>陈佳怡数学错题练习</h1>
+<div class="tab-wrap">
+  <div class="tab active" onclick="switchPage('exam')">刷题</div>
+  <div class="tab" onclick="switchPage('lib')">题库</div>
+  <div class="tab" onclick="switchPage('stat')">统计</div>
+</div>
+
+<div id="loading" class="loading">正在加载题库...</div>
+
+<div id="examPage" class="hide">
+  <div class="card">
+    <div class="info">知识点标签：<span id="curTag"></span></div>
+    <div id="qBox"></div>
+    <div style="margin-top:10px">
+      <button class="btn btn-orange" onclick="openExtend()">举一反三（变式练习）</button>
+      <button class="btn btn-gray" onclick="nextQuestion()">下一题</button>
+    </div>
+  </div>
+</div>
+
+<div id="libPage" class="hide">
+  <div class="card">
+    <div class="info">筛选知识点：<span id="tagFilterWrap"></span></div>
+    <div id="libList"></div>
+  </div>
+</div>
+
+<div id="statPage" class="hide">
+  <div class="card">
+    <div id="statWrap"></div>
+  </div>
+</div>
+
+<script>
+const BANK_URL = "https://hnck668.github.io/chen-jiayi-math-practice/bank.json";
+const STORAGE_KEY = "jiayi_record";
+let bank = [];
+let rec = {};
+let curIdx = 0;
+let filterTag = "";
+let isExtendMode = false;
+let extendList = [];
+let curExtIdx = 0;
+
+function getRecord(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : {};
+}
+function saveRecord(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(rec));
+}
+
+async function loadBank(){
+  try{
+    const res = await fetch(BANK_URL);
+    bank = await res.json();
+    rec = getRecord();
+    renderPage();
+  }catch(e){
+    document.getElementById("loading").innerText = "题库加载失败，请检查网络";
+    console.error(e);
+  }
+}
+
+function switchPage(p){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+  document.getElementById("loading").classList.add("hide");
+  document.getElementById("examPage").classList.add("hide");
+  document.getElementById("libPage").classList.add("hide");
+  document.getElementById("statPage").classList.add("hide");
+  if(p==="exam"){
+    document.getElementById("examPage").classList.remove("hide");
+    renderExam();
+  }else if(p==="lib"){
+    document.getElementById("libPage").classList.remove("hide");
+    renderLib();
+  }else if(p==="stat"){
+    document.getElementById("statPage").classList.remove("hide");
+    renderStat();
+  }
+}
+
+function renderPage(){
+  document.getElementById("loading").classList.add("hide");
+  switchPage("exam");
+}
+
+function getFiltered(){
+  if(!filterTag) return bank;
+  return bank.filter(i=>i.tag === filterTag);
+}
+
+function renderExam(){
+  const list = getFiltered();
+  if(list.length === 0){
+    document.getElementById("qBox").innerHTML = "<div class='info'>该分类下暂无题目</div>";
+    return;
+  }
+  if(curIdx >= list.length) curIdx = 0;
+  const item = list[curIdx];
+  document.getElementById("curTag").innerText = item.tag;
+  let html = `<div class="q-title">${item.question}</div>`;
+  if(item.type === "radio"){
+    html += `<div class="opt-wrap">${item.options}</div>`;
+  }else{
+    html += `<input class="input-ans" id="userAns" placeholder="填写答案">`;
+  }
+  html += `
+  <button class="btn btn-blue" onclick="submitAnswer('${item.id}','${item.answer}')">提交答案</button>
+  <div class="answer-block" id="ansBlock">
+    <div>✅参考答案：${item.answer}</div>
+    <div>📖解析：${item.explain}</div>
+  </div>
+  `;
+  document.getElementById("qBox").innerHTML = html;
+  isExtendMode = false;
+  extendList = item.extend || [];
+  curExtIdx = 0;
+}
+
+function openExtend(){
+  if(!extendList || extendList.length === 0){
+    alert("暂无变式练习题");
+    return;
+  }
+  isExtendMode = true;
+  renderExtend();
+}
+function renderExtend(){
+  const e = extendList[curExtIdx];
+  let html = `<div class="extend-title">【变式练习 ${curExtIdx+1}/${extendList.length}】</div>
+  <div class="q-title">${e.question}</div>`;
+  if(e.options){
+    html += `<div class="opt-wrap">${e.options}</div>`;
+  }else{
+    html += `<input class="input-ans" id="userAns" placeholder="填写答案">`;
+  }
+  html += `
+  <button class="btn btn-blue" onclick="submitExtend('${e.answer}')">提交答案</button>
+  <div class="answer-block" id="ansBlock">
+    <div>✅参考答案：${e.answer}</div>
+    <div>📖解析：${e.explain}</div>
+  </div>
+  <div style="margin-top:8px">
+    <button class="btn btn-gray" onclick="prevExtend()">上一变式</button>
+    <button class="btn btn-gray" onclick="nextExtend()">下一变式</button>
+    <button class="btn btn-orange" onclick="backOrigin()">返回原题</button>
+  </div>
+  `;
+  document.getElementById("qBox").innerHTML = html;
+}
+function prevExtend(){
+  curExtIdx--;
+  if(curExtIdx<0) curExtIdx = extendList.length - 1;
+  renderExtend();
+}
+function nextExtend(){
+  curExtIdx++;
+  if(curExtIdx >= extendList.length) curExtIdx = 0;
+  renderExtend();
+}
+function backOrigin(){
+  renderExam();
+}
+
+function submitAnswer(qid, rightAns){
+  const u = document.getElementById("userAns").value.trim();
+  const ok = (u === rightAns.trim());
+  if(!rec[qid]) rec[qid] = {right:0, wrong:0};
+  ok ? rec[qid].right++ : rec[qid].wrong++;
+  saveRecord();
+  document.getElementById("ansBlock").style.display = "block";
+}
+function submitExtend(rightAns){
+  const u = document.getElementById("userAns").value.trim();
+  document.getElementById("ansBlock").style.display = "block";
+}
+
+function nextQuestion(){
+  curIdx++;
+  renderExam();
+}
+
+function renderLib(){
+  const allTags = [...new Set(bank.map(i=>i.tag))];
+  let tagHtml = `<span class="tag-item ${filterTag==''?'weak':''}" onclick="setFilter('')">全部</span>`;
+  allTags.forEach(t=>{
+    tagHtml += `<span class="tag-item ${filterTag===t?'weak':''}" onclick="setFilter('${t}')">${t}</span>`;
+  })
+  document.getElementById("tagFilterWrap").innerHTML = tagHtml;
+  const list = getFiltered();
+  let html = "";
+  list.forEach(it=>{
+    html += `<div class="card">
+      <div class="info">【${it.tag}】</div>
+      <div>${it.question.slice(0,70)}...</div>
+    </div>`;
+  })
+  document.getElementById("libList").innerHTML = html;
+}
+function setFilter(t){
+  filterTag = t;
+  curIdx = 0;
+  renderLib();
+}
+
+function renderStat(){
+  const map = {};
+  bank.forEach(i=>{
+    if(!map[i.tag]) map[i.tag] = {r:0, w:0};
+    const r = rec[i.id] || {right:0, wrong:0};
+    map[i.tag].r += r.right;
+    map[i.tag].w += r.wrong;
+  })
+  let html = "";
+  for(let k in map){
+    const d = map[k];
+    const total = d.r + d.w;
+    const rate = total === 0 ? 0 : (d.r/total*100).toFixed(1);
+    const cls = rate < 60 ? "tag-item weak" : "tag-item";
+    html += `<div class="stat-row"><span class="${cls}" onclick="setFilter('${k}')">${k}</span> 正确率：${rate}% (${d.r}/${total})</div>`;
+  }
+  document.getElementById("statWrap").innerHTML = html;
+}
+
+loadBank();
+</script>
+</body>
+</html>
