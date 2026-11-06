@@ -1,1 +1,41 @@
 
+name: 追加数学错题到题库
+on:
+  repository_dispatch:
+    types: [add_question]
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 安装Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 追加题目到bank.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const payload = JSON.parse(process.env.PAYLOAD);
+            const bank = JSON.parse(fs.readFileSync('./bank.json','utf8'));
+            bank.push(payload);
+            fs.writeFileSync('./bank.json', JSON.stringify(bank, null, 2), 'utf8');
+          "
+        env:
+          PAYLOAD: ${{ github.event.client_payload.item }}
+
+      - name: 提交并推送
+        run: |
+          git config --global user.name "AutoBot"
+          git config --global user.email "bot@example.com"
+          git add bank.json
+          git commit -m "自动新增一道错题【${{ github.event.client_payload.item.tag }}】"
+          git push
