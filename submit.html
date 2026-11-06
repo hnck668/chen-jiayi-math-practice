@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错题题库提交器</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;}
+body{padding:16px;max-width:700px;margin:0 auto;}
+h2{text-align:center;margin-bottom:16px;}
+textarea{width:100%;height:280px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;}
+.btn{margin-top:12px;width:100%;padding:12px;border:none;background:#2563eb;color:#fff;border-radius:8px;font-size:16px;cursor:pointer;}
+.info{margin-top:12px;padding:10px;border-radius:8px;}
+.success{background:#dcfce7;color:#166534;}
+.error{background:#fee2e2;color:#dc2626;}
+</style>
+</head>
+<body>
+<h2>一键新增错题到题库</h2>
+<p style="margin-bottom:8px;font-size:14px;color:#555">粘贴单题JSON：</p>
+<textarea id="jsonInput" placeholder='{"id":"q001",...}'></textarea>
+<button class="btn" onclick="send()">提交，自动加入题库</button>
+<div id="msg" class="info" style="display:none"></div>
+
+<script>
+// ============ 这里修改为你的配置 ============
+const OWNER = "hnck668";
+const REPO = "chen-jiayi-math-practice";
+const TOKEN = "在这里粘贴你的ghp_开头PAT令牌";
+// ============================================
+
+async function send(){
+  const itemText = document.getElementById("jsonInput").value.trim();
+  const msgBox = document.getElementById("msg");
+  msgBox.style.display = "none";
+  if(!itemText){
+    showMsg("JSON不能为空！", "error");
+    return;
+  }
+  let payload;
+  try{
+    payload = JSON.parse(itemText);
+  }catch(e){
+    showMsg("JSON格式错误，检查标点！", "error");
+    return;
+  }
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/dispatches`;
+  const res = await fetch(url,{
+    method:"POST",
+    headers:{
+      "Authorization": `token ${TOKEN}`,
+      "Accept":"application/vnd.github.v3+json",
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      event_type: "add_question",
+      client_payload:{
+        item: payload
+      }
+    })
+  });
+  if(res.ok){
+    showMsg("✅ 提交成功！等待Github Action执行，稍后刷新刷题网页", "success");
+  }else{
+    const r = await res.json();
+    showMsg(`❌ 请求失败：${JSON.stringify(r)}`, "error");
+  }
+}
+function showMsg(text, type){
+  const msgBox = document.getElementById("msg");
+  msgBox.innerText = text;
+  msgBox.className = `info ${type}`;
+  msgBox.style.display = "block";
+}
+</script>
+</body>
+</html>
