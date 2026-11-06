@@ -1,0 +1,27 @@
+[
+  {
+    "id": "q001",
+    "tag": "一元一次方程",
+    "type": "fill",
+    "question": "原题题干",
+    "options": "",
+    "answer": "标准答案",
+    "explain": "错题解析",
+    "extend": [
+      {
+        "eid":"e001-1",
+        "question":"变式题1题干",
+        "options":"",
+        "answer":"变式1答案",
+        "explain":"变式1解析"
+      },
+      {
+        "eid":"e001-2",
+        "question":"变式题2题干",
+        "options":"",
+        "answer":"变式2答案",
+        "explain":"变式2解析"
+      }
+    ]
+  }
+]
