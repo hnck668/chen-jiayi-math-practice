@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>数学错题本（摄像头直拍版）</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{padding:14px;background:#f5f7fa;color:#222}
+.btn{padding:11px 14px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-size:15px;margin:4px;cursor:pointer}
+.btn-gray{background:#6b7280}
+.btn-green{background:#16a34a}
+.card{background:#fff;border-radius:10px;padding:14px;margin:12px 0;box-shadow:0 1px 4px #00000018}
+textarea,input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;margin:8px 0;font-size:15px}
+#preview{max-width:100%;max-height:220px;border-radius:6px;margin:8px 0}
+#video{width:100%;border-radius:6px;background:#222}
+#canvas{display:none}
+.item{border-bottom:1px solid #eee;padding:10px 0}
+.tag{display:inline-block;background:#eef2ff;color:#2563eb;padding:2px 6px;border-radius:4px;font-size:12px;margin:2px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h3>📷 摄像头录入错题</h3>
+  <video id="video" autoplay playsinline></video>
+  <div>
+    <button class="btn" onclick="openCamera()">打开后置摄像头</button>
+    <button class="btn btn-green" onclick="takePhoto()">拍照识别</button>
+    <button class="btn btn-gray" onclick="stopCamera()">关闭摄像头</button>
+  </div>
+  <img id="preview"/>
+  <div id="ocrStatus">等待拍照识别</div>
+  <textarea id="qText" placeholder="识别后的题干，可手动修改"></textarea>
+  <textarea id="ansText" placeholder="参考答案"></textarea>
+  <textarea id="expText" placeholder="解析讲解"></textarea>
+  <button class="btn" onclick="saveItem()">保存错题</button>
+  <button class="btn btn-gray" onclick="clearForm()">清空</button>
+  <div style="margin-top:10px;color:#777;font-size:13px;">备用：<input type="file" id="fileInput" accept="image/*"></div>
+  <canvas id="canvas"></canvas>
+</div>
+
+<div class="card">
+  <h3>📚 错题列表</h3>
+  <div id="listWrap"></div>
+</div>
+
+<div class="card">
+  <h3>💾 备份与恢复</h3>
+  <button class="btn btn-green" onclick="exportJson()">导出题库JSON</button>
+  <input type="file" id="importFile" accept=".json"/>
+  <button class="btn btn-gray" onclick="importJson()">导入题库</button>
+</div>
+
+<script>
+const STORAGE_KEY = "math_errbook_v1";
+let items = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+let currImg = null;
+let mediaStream = null;
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+// 打开后置摄像头
+async function openCamera(){
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"environment"}
+    });
+    video.srcObject = mediaStream;
+    document.getElementById("ocrStatus").innerText="摄像头已开启，对准题目后点拍照";
+  }catch(err){
+    alert("摄像头打开失败，请授予浏览器相机权限，建议使用Edge/Chrome浏览器");
+    console.error(err);
+  }
+}
+
+// 关闭摄像头
+function stopCamera(){
+  if(mediaStream){
+    mediaStream.getTracks().forEach(track=>track.stop());
+    mediaStream=null;
+    video.srcObject=null;
+    document.getElementById("ocrStatus").innerText="摄像头已关闭";
+  }
+}
+
+// 拍照 + OCR识别
+async function takePhoto(){
+  if(!mediaStream){alert("请先打开摄像头");return}
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video,0,0);
+  currImg = canvas.toDataURL("image/png");
+  document.getElementById("preview").src = currImg;
+  document.getElementById("ocrStatus").innerText="识别中，请稍等...";
+  const res = await Tesseract.recognize(currImg,"chi_sim+eng");
+  document.getElementById("qText").value = res.data.text;
+  document.getElementById("ocrStatus").innerText="识别完成，请核对修改文字";
+}
+
+// 备用文件上传逻辑
+document.getElementById("fileInput").onchange = async e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = async ev=>{
+    currImg = ev.target.result;
+    document.getElementById("preview").src = currImg;
+    document.getElementById("ocrStatus").innerText = "识别中...";
+    const res = await Tesseract.recognize(currImg,"chi_sim+eng");
+    document.getElementById("qText").value = res.data.text;
+    document.getElementById("ocrStatus").innerText = "识别完成，请核对修改";
+  }
+  reader.readAsDataURL(f);
+}
+
+function saveItem(){
+  const q = document.getElementById("qText").value.trim();
+  const a = document.getElementById("ansText").value.trim();
+  const e = document.getElementById("expText").value.trim();
+  if(!q){alert("题干不能为空");return}
+  items.push({
+    question:q,
+    answer:a,
+    explain:e,
+    img:currImg,
+    time:new Date().toLocaleString()
+  })
+  saveLocal();
+  clearForm();
+  renderList();
+  alert("保存成功");
+}
+
+function clearForm(){
+  document.getElementById("qText").value="";
+  document.getElementById("ansText").value="";
+  document.getElementById("expText").value="";
+  document.getElementById("preview").src="";
+  currImg=null;
+  document.getElementById("ocrStatus").innerText="等待拍照识别";
+}
+
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
+}
+
+function delItem(i){
+  if(!confirm("确定删除？"))return;
+  items.splice(i,1);
+  saveLocal();renderList();
+}
+
+function showDetail(i){
+  const it = items[i];
+  alert(`【题干】\n${it.question}\n\n【答案】\n${it.answer}\n\n【解析】\n${it.explain}`);
+}
+
+function makeVari(i){
+  const it = items[i];
+  const prompt = `根据这道数学题，出2道同知识点、同难度的变式练习题，附带答案和简要解析：\n${it.question}`;
+  alert("复制下面提示词发给AI：\n\n"+prompt);
+}
+
+function exportJson(){
+  const blob = new Blob([JSON.stringify(items,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url;a.download="errbook.json";a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJson(){
+  const f = document.getElementById("importFile").files[0];
+  if(!f)return;
+  const r = new FileReader();
+  r.onload=ev=>{
+    try{
+      const arr = JSON.parse(ev.target.result);
+      items = [...items,...arr];
+      saveLocal();renderList();
+      alert("导入成功");
+    }catch(err){alert("文件格式错误")}
+  }
+  r.readAsText(f);
+}
+
+function renderList(){
+  const wrap = document.getElementById("listWrap");
+  wrap.innerHTML = "";
+  items.forEach((it,idx)=>{
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div>${it.question.slice(0,70)}${it.question.length>70?"...":""}</div>
+      <div>
+        <span class="tag">答案：${it.answer||"无"}</span>
+        <button class="btn" style="padding:4px 8px;font-size:12px" onclick="showDetail(${idx})">详情</button>
+        <button class="btn btn-gray" style="padding:4px 8px;font-size:12px" onclick="makeVari(${idx})">举一反三</button>
+        <button class="btn btn-gray" style="padding:4px 8px;font-size:12px" onclick="delItem(${idx})">删除</button>
+      </div>
+    `;
+    wrap.appendChild(div);
+  })
+}
+
+renderList();
+</script>
+</body>
+</html>
